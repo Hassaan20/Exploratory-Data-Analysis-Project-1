@@ -1,15 +1,9 @@
-library("data.table")
+dataFile <- "./data/household_power_consumption.txt"
+data <- read.table(dataFile, header=TRUE, sep=";", stringsAsFactors=FALSE, dec=".")
+subSetData <- data[data$Date %in% c("1/2/2007","2/2/2007") ,]
 
-setwd("~/Desktop/datasciencecoursera/4_Exploratory_Data_Analysis/project/data")
-
-powerDT <- data.table::fread(input = "household_power_consumption.txt" , na.strings="?")
-powerDT[, Global_active_power := lapply(.SD, as.numeric), .SDcols = c("Global_active_power")]
-powerDT[, dateTime := as.POSIXct(paste(Date, Time), format = "%d/%m/%Y %H:%M:%S")]
-powerDT <- powerDT[(dateTime >= "2007-02-01") & (dateTime < "2007-02-03")]
-
+datetime <- strptime(paste(subSetData$Date, subSetData$Time, sep=" "), "%d/%m/%Y %H:%M:%S") 
+globalActivePower <- as.numeric(subSetData$Global_active_power)
 png("plot2.png", width=480, height=480)
-
-## Plot 2
-plot(x = powerDT[, dateTime], y = powerDT[, Global_active_power], type="l", xlab="", ylab="Global Active Power (kilowatts)")
-
+plot(datetime, globalActivePower, type="l", xlab="", ylab="Global Active Power (kilowatts)")
 dev.off()
